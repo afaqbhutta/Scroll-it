@@ -1,0 +1,6 @@
+Flask
+Flask-Login
+Flask-SQLAlchemy
+azure-storage-blob
+pyodbc
+gunicorn
