@@ -9,7 +9,7 @@ from datetime import timedelta
 app = Flask(__name__)
 
 # Better secret key management
-.secret_key = os.environ.get('SECRET_KEY', '')app
+app.secret_key = os.environ.get('SECRET_KEY', 'admin')
 
 # Session config
 app.config['SESSION_PERMANENT'] = False
