@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Video Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f4f4f4;
+        }
+        .video-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        video {
+            width: 100%;
+            max-width: 640px;
+            margin-top: 10px;
+        }
+        .meta {
+            font-size: 0.9em;
+            color: #666;
+        }
+        textarea {
+            width: 100%;
+            max-width: 600px;
+            height: 60px;
+        }
+        .comment {
+            background: #f9f9f9;
+            padding: 8px;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+        .comment form {
+            display: inline;
+        }
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <h1>Video Dashboard</h1>
+        <a href="/logout"><button>Logout</button></a>
+    </div>
+
+    <!--  Search Form -->
+    <form method="GET" action="/dashboard">
+        <input type="text" name="search" placeholder="Search videos..." value="{{ request.args.get('search', '') }}">
+        <button type="submit">Search</button>
+    </form>
+
+    <!-- Upload Link for Creators -->
+    {% if session.get('IsCreator') == 1 %}
+        <p><a href="/creator"><button>Upload Video</button></a></p>
+    {% endif %}
+
+    <hr>
+
+    <!--  Video Cards -->
+    {% for entry in video_data %}
+        {% set video = entry.video %}
+        <div class="video-card">
+            <h2>{{ video.title }}</h2>
+            <p class="meta">
+                <strong>Publisher:</strong> {{ video.publisher or 'N/A' }} |
+                <strong>Producer:</strong> {{ video.producer or 'N/A' }} |
+                <strong>Genre:</strong> {{ video.genre or 'N/A' }} |
+                <strong>Age Rating:</strong> {{ video.age_rating or 'N/A' }} <br>
+                <strong>Uploaded:</strong> {{ video.uploaded_at.strftime('%Y-%m-%d %H:%M:%S') }}
+            </p>
+            <p>{{ video.description or '' }}</p>
+            <video controls>
+                <source src="{{ video.blob_url }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+
+            <!-- Rating -->
+            <p><strong>Average Rating:</strong> {{ entry.avg_rating or 'Not rated yet' }}</p>
+
+            <!--  Comment and Rating Form -->
+            <form method="POST" action="/dashboard">
+                <input type="hidden" name="video_id" value="{{ video.id }}">
+                <textarea name="comment" placeholder="Leave a comment..."></textarea><br>
+                <label>Rate this video:</label>
+                <select name="rating">
+                    <option value="">--</option>
+                    {% for i in range(1, 6) %}
+                        <option value="{{ i }}" {% if entry.user_rating == i %}selected{% endif %}>{{ i }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Submit</button>
+            </form>
+
+            <!--  Comments -->
+            <h4>Comments:</h4>
+            {% for comment in entry.comments %}
+                <div class="comment">
+                    <strong>{{ comment.user.username }}:</strong> {{ comment.content }}
+                    <small>({{ comment.created_at.strftime('%Y-%m-%d %H:%M') }})</small>
+
+                    {% if comment.user_id == session['user_id'] %}
+                        <form method="POST" action="/dashboard" style="display:inline;">
+                            <input type="hidden" name="delete_comment_id" value="{{ comment.id }}">
+                            <button type="submit" onclick="return confirm('Delete this comment?')">Delete</button>
+                        </form>
+                    {% endif %}
+                </div>
+            {% else %}
+                <p>No comments yet.</p>
+            {% endfor %}
+        </div>
+    {% endfor %}
+
+</body>
+</html>

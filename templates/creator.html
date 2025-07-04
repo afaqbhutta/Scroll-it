@@ -1,61 +1,165 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Creator Dashboard</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
             padding: 20px;
-            background-color: #f5f5f5;
+            background: #f4f4f4;
         }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            text-align: center;
+
+        h1, h2 {
+            color: #333;
         }
-        
-        h1 {
-            color: #28a745;
-            margin-bottom: 20px;
+
+        form, .video-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
-        
-        .welcome-message {
-            font-size: 18px;
-            color: #666;
-            margin-bottom: 30px;
+
+        label {
+            font-weight: bold;
         }
-        
-        .logout-btn {
-            background-color: #dc3545;
+
+        input[type="text"],
+        textarea,
+        select,
+        input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        input[type="submit"],
+        button {
+            padding: 8px 12px;
+            background-color: #333;
             color: white;
-            padding: 10px 20px;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
         }
-        
-        .logout-btn:hover {
-            background-color: #c82333;
+
+        button:hover, input[type="submit"]:hover {
+            background-color: #555;
+        }
+
+        .video-card video {
+            width: 100%;
+            max-width: 480px;
+            margin-top: 10px;
+        }
+
+        .video-card p {
+            margin: 5px 0;
+        }
+
+        .meta {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .flash-message {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+
+        .flash-error {
+            background-color: #ffe6e6;
+            color: red;
+        }
+
+        .flash-success {
+            background-color: #e6ffe6;
+            color: green;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Welcome to Creator Dashboard</h1>
-        <p class="welcome-message">Hello Creator! You are successfully logged in.</p>
-        <p>This is your creator dashboard where you can create and manage your content.</p>
-        
-        <a href="/logout" class="logout-btn">Logout</a>
+
+    <h1>Creator Dashboard</h1>
+
+    <div class="nav-buttons">
+        <a href="/dashboard"><button>Dashboard</button></a>
+        <a href="/logout"><button>Logout</button></a>
     </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash-message {{ 'flash-error' if category == 'error' else 'flash-success' }}">
+              {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <h2>Upload Video</h2>
+    <form method="POST" enctype="multipart/form-data">
+        <label>Title:</label>
+        <input type="text" name="title" required>
+
+        <label>Description:</label>
+        <textarea name="description"></textarea>
+
+        <label>Publisher:</label>
+        <input type="text" name="publisher">
+
+        <label>Producer:</label>
+        <input type="text" name="producer">
+
+        <label>Genre:</label>
+        <input type="text" name="genre">
+
+        <label>Age Rating:</label>
+        <select name="age_rating">
+            <option value="">Select Rating</option>
+            <option value="G">G</option>
+            <option value="PG">PG</option>
+            <option value="PG-13">PG-13</option>
+            <option value="R">R</option>
+            <option value="18+">18+</option>
+        </select>
+
+        <label>Video File:</label>
+        <input type="file" name="video" accept="video/*" required>
+
+        <input type="submit" value="Upload">
+    </form>
+
+    <h2>Your Videos</h2>
+    {% for video in videos %}
+        <div class="video-card">
+            <h3>{{ video.title }}</h3>
+            <p class="meta">
+                <strong>Publisher:</strong> {{ video.publisher or 'N/A' }} |
+                <strong>Producer:</strong> {{ video.producer or 'N/A' }}<br>
+                <strong>Genre:</strong> {{ video.genre or 'N/A' }} |
+                <strong>Age Rating:</strong> {{ video.age_rating or 'N/A' }}
+            </p>
+            <p>{{ video.description or '' }}</p>
+            <video controls>
+                <source src="{{ video.blob_url }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    {% else %}
+        <p>No videos uploaded yet.</p>
+    {% endfor %}
+
 </body>
 </html>
