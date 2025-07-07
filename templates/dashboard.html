@@ -52,20 +52,20 @@
         <a href="/logout"><button>Logout</button></a>
     </div>
 
-    <!--  Search Form -->
+    
     <form method="GET" action="/dashboard">
         <input type="text" name="search" placeholder="Search videos..." value="{{ request.args.get('search', '') }}">
         <button type="submit">Search</button>
     </form>
 
-    <!-- Upload Link for Creators -->
+   
     {% if session.get('IsCreator') == 1 %}
         <p><a href="/creator"><button>Upload Video</button></a></p>
     {% endif %}
 
     <hr>
 
-    <!--  Video Cards -->
+    <!--  for the Video Cards -->
     {% for entry in video_data %}
         {% set video = entry.video %}
         <div class="video-card">
@@ -83,7 +83,7 @@
                 Your browser does not support the video tag.
             </video>
 
-            <!-- Rating -->
+            <!-- to manage the Rating -->
             <p><strong>Average Rating:</strong> {{ entry.avg_rating or 'Not rated yet' }}</p>
 
             <!--  Comment and Rating Form -->
@@ -100,7 +100,7 @@
                 <button type="submit">Submit</button>
             </form>
 
-            <!--  Comments -->
+            <!--  Handling the Comments -->
             <h4>Comments:</h4>
             {% for comment in entry.comments %}
                 <div class="comment">
