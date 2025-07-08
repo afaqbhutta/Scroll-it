@@ -13,7 +13,7 @@
             color: #333;
         }
 
-        form, .video-card {
+        form {
             background: #fff;
             border-radius: 8px;
             padding: 15px;
@@ -51,21 +51,6 @@
             background-color: #555;
         }
 
-        .video-card video {
-            width: 100%;
-            max-width: 480px;
-            margin-top: 10px;
-        }
-
-        .video-card p {
-            margin: 5px 0;
-        }
-
-        .meta {
-            font-size: 0.9em;
-            color: #666;
-        }
-
         .flash-message {
             padding: 10px;
             border-radius: 4px;
@@ -95,6 +80,7 @@
 
     <div class="nav-buttons">
         <a href="/dashboard"><button>Dashboard</button></a>
+        <a href="/creator/videos"><button>Your Videos</button></a>
         <a href="/logout"><button>Logout</button></a>
     </div>
 
@@ -140,26 +126,6 @@
 
         <input type="submit" value="Upload">
     </form>
-
-    <h2>Your Videos</h2>
-    {% for video in videos %}
-        <div class="video-card">
-            <h3>{{ video.title }}</h3>
-            <p class="meta">
-                <strong>Publisher:</strong> {{ video.publisher or 'N/A' }} |
-                <strong>Producer:</strong> {{ video.producer or 'N/A' }}<br>
-                <strong>Genre:</strong> {{ video.genre or 'N/A' }} |
-                <strong>Age Rating:</strong> {{ video.age_rating or 'N/A' }}
-            </p>
-            <p>{{ video.description or '' }}</p>
-            <video controls>
-                <source src="{{ video.blob_url }}" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-        </div>
-    {% else %}
-        <p>No videos uploaded yet.</p>
-    {% endfor %}
 
 </body>
 </html>

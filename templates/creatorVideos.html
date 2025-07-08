@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your Uploaded Videos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <h1>Your Uploaded Videos</h1>
+
+    <div class="nav-buttons">
+        <a href="/creator"><button>Upload More</button></a>
+        <a href="/logout"><button>Logout</button></a>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash-message {{ 'flash-error' if category == 'error' else 'flash-success' }}">
+              {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% if videos %}
+        {% for video in videos %}
+            <div class="video-card">
+                <h3>{{ video.title }}</h3>
+                <p class="meta">
+                    <strong>Publisher:</strong> {{ video.publisher or 'N/A' }} |
+                    <strong>Producer:</strong> {{ video.producer or 'N/A' }}<br>
+                    <strong>Genre:</strong> {{ video.genre or 'N/A' }} |
+                    <strong>Age Rating:</strong> {{ video.age_rating or 'N/A' }}
+                </p>
+                <p>{{ video.description or '' }}</p>
+                <video controls>
+                    <source src="{{ video.blob_url }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <form method="POST" onsubmit="return confirm('Are you sure you want to delete this video?');">
+                    <input type="hidden" name="delete_video_id" value="{{ video.id }}">
+                    <button type="submit" class="delete-btn">Delete</button>
+                </form>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No videos uploaded yet.</p>
+    {% endif %}
+
+</body>
+</html>

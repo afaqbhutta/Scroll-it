@@ -145,7 +145,7 @@ def register():
                 flash("Username already taken", "error")
                 return render_template('register.html')
 
-            # Check if email already exists
+            # To check if email already exists
             existing_email = User.query.filter_by(email=email).first()
             if existing_email:
                 flash("Email already registered", "error")
@@ -262,11 +262,39 @@ def creator():
             db.session.rollback()
             flash("Video upload failed.", "error")
 
-        return redirect('/creator')  # Redirect only after POST
+        return redirect('/creator')  # Redirect after POST
 
-    # GET: Render page with uploaded videos
+    return render_template('creator.html')  # No video data passed
+
+
+#route for the videos uploaded by the creator
+@app.route('/creator/videos', methods=['GET', 'POST'])
+def creator_videos():
+    if 'user_id' not in session or session.get('IsCreator') != 1:
+        flash("Access denied. Creator account required.", "error")
+        return redirect('/login')
+
+    if request.method == 'POST' and 'delete_video_id' in request.form:
+        video_id = int(request.form.get('delete_video_id'))
+        video = Video.query.filter_by(id=video_id, uploaded_by=session['user_id']).first()
+        if not video:
+            flash("Video not found or unauthorized.", "error")
+            return redirect('/creator/videos')
+        try:
+            blob_name = video.blob_url.split('/')[-1]
+            blob_client = blob_container_client.get_blob_client(blob_name)
+            blob_client.delete_blob()
+            db.session.delete(video)
+            db.session.commit()
+            flash("Video deleted successfully!", "success")
+        except Exception as e:
+            print(f"Deletion error: {e}")
+            db.session.rollback()
+            flash("Failed to delete video.", "error")
+        return redirect('/creator/videos')
+
     videos = Video.query.filter_by(uploaded_by=session['user_id']).order_by(Video.uploaded_at.desc()).all()
-    return render_template('creator.html', videos=videos)
+    return render_template('creatorVideos.html', videos=videos)
 
 
 # Route for consumer dashboard
@@ -390,12 +418,4 @@ def internal_error(error):
 
 
 if __name__ == '__main__':
-    # Create tables if they don't exist
-    with app.app_context():
-        try:
-            db.create_all()
-            print("Database tables created successfully!")
-        except Exception as e:
-            print(f"Error creating tables: {e}")
-    
     app.run(debug=True, host='0.0.0.0', port=5000)
