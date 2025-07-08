@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Video Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Scroll'It</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
-            background: #f4f4f4;
+            /* background: #f4f4f4; */
         }
         .video-card {
-            background: #fff;
             border-radius: 8px;
             padding: 15px;
             margin: 20px 0;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         video {
-            width: 100%;
+            width: 50%;
             max-width: 640px;
             margin-top: 10px;
         }
@@ -30,7 +30,6 @@
             height: 60px;
         }
         .comment {
-            background: #f9f9f9;
             padding: 8px;
             border-radius: 5px;
             margin: 5px 0;
@@ -48,7 +47,7 @@
 <body>
 
     <div class="top-bar">
-        <h1>Video Dashboard</h1>
+        <h1>Scroll'It</h1>
         <a href="/logout"><button>Logout</button></a>
     </div>
 
@@ -75,7 +74,6 @@
                 <strong>Producer:</strong> {{ video.producer or 'N/A' }} |
                 <strong>Genre:</strong> {{ video.genre or 'N/A' }} |
                 <strong>Age Rating:</strong> {{ video.age_rating or 'N/A' }} <br>
-                <strong>Uploaded:</strong> {{ video.uploaded_at.strftime('%Y-%m-%d %H:%M:%S') }}
             </p>
             <p>{{ video.description or '' }}</p>
             <video controls>
@@ -105,7 +103,7 @@
             {% for comment in entry.comments %}
                 <div class="comment">
                     <strong>{{ comment.user.username }}:</strong> {{ comment.content }}
-                    <small>({{ comment.created_at.strftime('%Y-%m-%d %H:%M') }})</small>
+                    <!-- <small>({{ comment.created_at.strftime('%Y-%m-%d %H:%M') }})</small> -->
 
                     {% if comment.user_id == session['user_id'] %}
                         <form method="POST" action="/dashboard" style="display:inline;">

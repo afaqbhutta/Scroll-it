@@ -1,12 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Your Uploaded Videos</title>
+    <title>Scroll'It</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        video {
+            width: 50%;
+            max-width: 640px;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
 
-    <h1>Your Uploaded Videos</h1>
+    <h1>Scroll'It</h1>
 
     <div class="nav-buttons">
         <a href="/creator"><button>Upload More</button></a>

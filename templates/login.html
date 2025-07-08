@@ -2,11 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Login Page</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+  <title>Scroll'It</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f3f3f3;
+      /* background-color: #f3f3f3; */
       display: flex;
       justify-content: center;
       align-items: center;
@@ -14,7 +16,6 @@
     }
 
     .login-container {
-      background-color: white;
       padding: 2rem;
       border-radius: 8px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
